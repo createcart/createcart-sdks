@@ -13,7 +13,8 @@ SDKs gain a database with **no SDK code changes** — just swap the store.
 ## Schema
 
 ```
-tenants(id INTEGER PK 0..n, name TEXT UNIQUE)        -- name → id mapping
+tenants(id INTEGER PK 0..n, name TEXT UNIQUE,         -- name → id mapping
+        password_hash TEXT, base_url TEXT)            -- tenant admin auth + stored API base url
 
 -- created on demand, one set per tenant (suffix = tenant_id):
 menu_items_<id>(id, name, name_localized, description, price, currency,
@@ -22,7 +23,12 @@ categories_<id>(id, name, sort_order, metadata)
 combos_<id>(id, name, price, currency, description, item_ids, tags, available, sort_order, metadata)
 carts_<id>(cart_id PK, data)                          -- cart aggregate as JSON
 payments_<id>(order_id PK, status, amount, currency, provider, cart_id, payment_id, data)
+deliveries_<id>(order_id PK, status, created_at, data) -- delivery order + timeline as JSON
 ```
+
+The `password_hash` / `base_url` columns are added automatically to older
+databases via a lightweight migration on open (opaque hash — the API hashes and
+verifies; this layer only stores it).
 
 `tenant_id` starts at **0** and increments. Tenant names must be lowercase
 english words/slugs (`brahmana-naivedyam`) — validated, which also keeps the
@@ -34,9 +40,10 @@ generated table names safe.
 packages/store-sqlite/
 ├─ src/createcart_store_sqlite/
 │  ├─ db.py             # Database — tenants registry + per-tenant table DDL
-│  ├─ menu_store.py     # SqliteMenuStore   (implements MenuStore)
-│  ├─ cart_store.py     # SqliteCartStore   (implements CartStore)
-│  └─ payment_store.py  # SqlitePaymentStore(implements PaymentStore)
+│  ├─ menu_store.py     # SqliteMenuStore     (implements MenuStore)
+│  ├─ cart_store.py     # SqliteCartStore     (implements CartStore)
+│  ├─ payment_store.py  # SqlitePaymentStore  (implements PaymentStore)
+│  └─ delivery_store.py # SqliteDeliveryStore (implements DeliveryStore)
 ├─ tests/test_store_sqlite.py
 └─ examples/migrate_json_to_sqlite.py
 ```
@@ -44,7 +51,9 @@ packages/store-sqlite/
 ## Usage
 
 ```python
-from createcart_store_sqlite import Database, SqliteMenuStore, SqliteCartStore, SqlitePaymentStore
+from createcart_store_sqlite import (
+    Database, SqliteMenuStore, SqliteCartStore, SqlitePaymentStore, SqliteDeliveryStore
+)
 from createcart_registry import MenuRegistry
 from createcart_cart import Cart
 from createcart_payment import PaymentService, MockProvider
@@ -64,10 +73,13 @@ db.tenant_id("brahmana-naivedyam")   # 0
 
 | Method | Returns |
 |--------|---------|
-| `get_or_create_tenant(name)` | `int` — id, creating tenant + tables if new |
+| `get_or_create_tenant(name, *, tenant_id=None)` | `int` — id, creating tenant + tables if new |
+| `update_tenant(name, *, password_hash=None, base_url=None)` | `None` — set auth/base-url fields |
+| `get_tenant(name)` | `dict \| None` — full record `{id, name, password_hash, base_url}` |
 | `tenant_id(name)` | `int \| None` |
 | `tenant_name(id)` | `str \| None` |
 | `list_tenants()` | `list[(id, name)]` ordered by id |
+| `list_tenants_full()` | `list[dict]` — `{id, name, base_url}` (no password) |
 
 ## Migrate an existing JSON menu
 

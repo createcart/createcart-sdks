@@ -30,7 +30,7 @@ These libraries are consumed by:
 | [`packages/cart`](packages/cart/README.md) | Python | `createcart-cart` | Shopping cart engine | 14 |
 | [`packages/payment`](packages/payment/README.md) | Python | `createcart-payment` | Pluggable payments | 8 |
 | [`packages/js-client`](packages/js-client/README.md) | JS | `@createcart/client` | Browser data client | — |
-| [`packages/delivery`](packages/delivery/README.md) | Python | `createcart-delivery` | Order lifecycle state machine + timeline | 11 |
+| [`packages/delivery`](packages/delivery/README.md) | Python | `createcart-delivery` | Order lifecycle state machine + timeline | 13 |
 | [`packages/notify`](packages/notify/README.md) | Python | `createcart-notify` | SMS/WhatsApp status follow-ups (Twilio + Console) | 7 |
 | [`packages/auth`](packages/auth/README.md) | Python | `createcart-auth` | Customer Sign in with Google (+ Mock) | 6 |
 | [`packages/store-sqlite`](packages/store-sqlite/README.md) | Python | `createcart-store-sqlite` | SQLite storage, per-tenant tables (`tenant_id` 0..n ↔ name) | 9 |

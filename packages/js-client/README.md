@@ -39,6 +39,8 @@ packages/js-client/
 | Menu (read) | `getMenu()`, `listItems(params)`, `getItem(id)`, `listCombos()` |
 | Cart | `getCart()`, `addToCart(itemId, qty)`, `increment(id, by)`, `decrement(id, by)`, `setQuantity(id, qty)`, `removeItem(id)`, `clearCart()` |
 | Checkout | `checkout()`, `verifyPayment(payload)`, **`pay(opts)`** — one-call checkout (handles mock instantly; loads Razorpay `checkout.js` and opens the widget for real) |
+| Auth (Sign in with Google) | `getAuthConfig()`, `googleLogin(idToken)`, `myOrders(idToken)` — verify a Google ID token and fetch that customer's past orders |
+| Delivery | `getDelivery(orderId)` — track an order's status + timeline |
 
 `Store` auto-creates and persists a per-browser cart id in `localStorage`
 (`cc_cart_<tenant>`), so a returning customer keeps their cart.
@@ -101,4 +103,8 @@ tenant supplies its own brand color. All page styling lives in the tenant's HTML
 ## Install
 
 - **Now:** copy `createcart.js` into the tenant site (vendoring), or `<script src>` it.
-- **Later:** publish to npm and `import { Store, Admin } from "@createcart/client"`.
+  The file is a UMD/global script — after loading it, use `window.CreateCart`
+  (`CreateCart.Store`, `CreateCart.Admin`, `CreateCart.Platform`); there are no ES
+  `import` exports yet.
+- **Later:** publish to npm; an ESM build (`import { Store, Admin } from "@createcart/client"`)
+  is on the roadmap but not shipped.

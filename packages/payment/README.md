@@ -53,13 +53,13 @@ Verification follows Razorpay's scheme: `HMAC_SHA256(order_id + "|" + payment_id
 |-----------|--------------|
 | `PaymentService` | `create_order`, `verify_payment` (raises on bad signature, marks record `failed`), `public_key` |
 | `RazorpayProvider(key_id, key_secret)` | real order creation + signature verify |
-| `MockProvider(key_id, key_secret)` | offline; `make_test_payment(order_id)` returns a valid `{payment_id, signature}` pair |
+| `MockProvider(key_id="mock_key", key_secret="mock_secret")` | offline (args optional); `make_test_payment(order_id)` returns a valid `{payment_id, signature}` pair |
 | Storage | track lifecycle `created → paid / failed`, keyed by `order_id` |
 
 ## Data model
 
 ```python
-PaymentStatus = "created" | "paid" | "failed"
+PaymentStatus(str, Enum) = created | paid | failed   # str-enum: PaymentStatus.paid == "paid"
 PaymentOrder(id, amount (paise int), currency, provider, receipt, status, notes, raw)
 PaymentRecord(order_id, amount, currency, provider, status, payment_id, receipt, cart_id, notes)
 ```

@@ -28,7 +28,7 @@ packages/delivery/
 │  ├─ service.py       # DeliveryService — create + transitions + tracking
 │  ├─ exceptions.py    # DeliveryError, DeliveryNotFoundError, InvalidTransitionError
 │  └─ storage/         # base.py · memory.py · jsonfile.py
-└─ tests/test_delivery.py   # 10 tests
+└─ tests/test_delivery.py   # 13 tests
 ```
 
 ## What it can do
