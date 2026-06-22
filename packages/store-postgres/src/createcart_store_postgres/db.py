@@ -65,8 +65,15 @@ class PgDatabase:
 
     def connect(self) -> psycopg.Connection:
         """Open a connection. Used as a context manager: commits on success,
-        rolls back on error, and closes on exit (mirrors the SQLite backend)."""
-        return psycopg.connect(self.dsn, row_factory=dict_row)
+        rolls back on error, and closes on exit (mirrors the SQLite backend).
+
+        ``prepare_threshold=None`` disables server-side prepared statements, which
+        the Supabase **transaction pooler** (pgbouncer, transaction mode) does not
+        support — required for serverless/Vercel. Harmless on a direct connection.
+        """
+        return psycopg.connect(
+            self.dsn, row_factory=dict_row, prepare_threshold=None
+        )
 
     # ── tenant registry ──────────────────────────────────────────────────
     def get_or_create_tenant(self, name: str, *, tenant_id: Optional[int] = None) -> int:
