@@ -1,0 +1,25 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "createcart-store-postgres"
+version = "0.1.0"
+description = "Postgres / Supabase storage backends for the CreateCart SDKs (per-tenant tables)."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "CreateCart" }]
+dependencies = [
+    "psycopg[binary]>=3.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/createcart_store_postgres"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

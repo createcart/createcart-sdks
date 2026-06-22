@@ -14,7 +14,8 @@ createcart-sdks/
    ├─ delivery/     # Delivery SDK (Python)  — order lifecycle state machine + timeline
    ├─ notify/       # Notify SDK   (Python)  — SMS/WhatsApp status follow-ups (Twilio/Console)
    ├─ auth/         # Auth SDK     (Python)  — customer Sign in with Google (+ Mock)
-   └─ store-sqlite/ # Storage      (Python)  — SQLite backends, per-tenant tables (id 0..n)
+   ├─ store-sqlite/ # Storage      (Python)  — SQLite backends, per-tenant tables (id 0..n)
+   └─ store-postgres/ # Storage    (Python)  — Postgres/Supabase backends (same per-tenant schema)
 ```
 
 These libraries are consumed by:
@@ -34,6 +35,7 @@ These libraries are consumed by:
 | [`packages/notify`](packages/notify/README.md) | Python | `createcart-notify` | SMS/WhatsApp status follow-ups (Twilio + Console) | 7 |
 | [`packages/auth`](packages/auth/README.md) | Python | `createcart-auth` | Customer Sign in with Google (+ Mock) | 6 |
 | [`packages/store-sqlite`](packages/store-sqlite/README.md) | Python | `createcart-store-sqlite` | SQLite storage, per-tenant tables (`tenant_id` 0..n ↔ name) | 9 |
+| [`packages/store-postgres`](packages/store-postgres/README.md) | Python | `createcart-store-postgres` | Postgres/Supabase storage, same per-tenant schema | 3 |
 
 ## Design principles (shared by all packages)
 
