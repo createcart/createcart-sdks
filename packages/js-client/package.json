@@ -1,0 +1,12 @@
+{
+  "name": "@createcart/client",
+  "version": "0.1.0",
+  "description": "CreateCart browser client SDK — Store (customer) + Admin (business) surfaces over the CreateCart API.",
+  "main": "createcart.js",
+  "browser": "createcart.js",
+  "files": ["createcart.js", "README.md"],
+  "type": "commonjs",
+  "keywords": ["createcart", "ecommerce", "cart", "menu", "razorpay"],
+  "license": "UNLICENSED",
+  "private": true
+}

@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "createcart-auth"
+version = "0.1.0"
+description = "CreateCart Auth SDK — pluggable customer identity (Sign in with Google) with a Mock provider for local dev."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "CreateCart" }]
+license = { text = "Proprietary" }
+dependencies = [
+    "pydantic>=2.6",
+]
+# Google ID tokens are verified via Google's tokeninfo endpoint (urllib) — no
+# google-auth / JWT package required.
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/createcart_auth"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

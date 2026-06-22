@@ -1,0 +1,28 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "createcart-payment"
+version = "0.1.0"
+description = "CreateCart Payment SDK — pluggable payment providers (Razorpay) with server-side order creation and signature verification."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "CreateCart" }]
+license = { text = "Proprietary" }
+dependencies = [
+    "pydantic>=2.6",
+]
+# No hard dependency on the `razorpay` package: order creation uses the REST
+# API via urllib and signature verification uses stdlib hmac. Zero extra deps.
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/createcart_payment"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

@@ -1,0 +1,27 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "createcart-store-sqlite"
+version = "0.1.0"
+description = "SQLite storage backends for the CreateCart SDKs — per-tenant tables with a tenant_id (0..n) ↔ name registry."
+readme = "README.md"
+requires-python = ">=3.10"
+authors = [{ name = "CreateCart" }]
+license = { text = "Proprietary" }
+# Imports models/protocols from the three SDKs at runtime. They are installed
+# alongside (editable / git / registry) — not declared here so pip doesn't try
+# to fetch them from a public index. Uses stdlib sqlite3 — no extra deps.
+dependencies = []
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/createcart_store_sqlite"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
