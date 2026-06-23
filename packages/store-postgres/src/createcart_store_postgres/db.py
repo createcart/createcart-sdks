@@ -51,6 +51,11 @@ class PgDatabase:
 
     def __init__(self, dsn: str) -> None:
         self.dsn = dsn
+        # Cache of resolved tenant ids so repeat store builds (every cart op,
+        # every menu read) don't re-hit the DB just to look up the id + ensure
+        # tables. Persists for the life of the handle — and the API keeps one
+        # handle per process — so it's ensured-once, then free.
+        self._tenant_ids: dict[str, int] = {}
         with self.connect() as conn:
             conn.execute(
                 "CREATE TABLE IF NOT EXISTS tenants ("
@@ -80,6 +85,9 @@ class PgDatabase:
         """Return the tenant_id for ``name``, creating it (and its per-tenant
         tables) if new. IDs are assigned sequentially from 0, or you may pass an
         explicit ``tenant_id`` when onboarding."""
+        cached = self._tenant_ids.get(name)
+        if cached is not None:
+            return cached
         if not _NAME_RE.match(name):
             raise ValueError(
                 f"invalid tenant name {name!r}: use a lowercase english "
@@ -105,7 +113,8 @@ class PgDatabase:
                 conn.execute("INSERT INTO tenants(id, name) VALUES(%s, %s)", (tid, name))
             for ddl in _per_tenant_ddl(tid):
                 conn.execute(ddl)
-            return tid
+        self._tenant_ids[name] = tid
+        return tid
 
     def update_tenant(
         self,

@@ -47,6 +47,8 @@ class Database:
 
     def __init__(self, path: str | Path) -> None:
         self.path = str(path)
+        # Cache of resolved tenant ids so repeat store builds don't re-hit the DB.
+        self._tenant_ids: dict[str, int] = {}
         parent = Path(self.path).parent
         if str(parent) not in ("", "."):
             parent.mkdir(parents=True, exist_ok=True)
@@ -77,6 +79,9 @@ class Database:
         """Return the tenant_id for ``name``, creating it (and its per-tenant
         tables) if new. IDs are assigned sequentially from 0, or you may pass an
         explicit ``tenant_id`` when onboarding."""
+        cached = self._tenant_ids.get(name)
+        if cached is not None:
+            return cached
         if not _NAME_RE.match(name):
             raise ValueError(
                 f"invalid tenant name {name!r}: use a lowercase english "
@@ -105,7 +110,8 @@ class Database:
             for ddl in _per_tenant_ddl(tid):
                 conn.execute(ddl)
             conn.commit()
-            return tid
+        self._tenant_ids[name] = tid
+        return tid
 
     def update_tenant(
         self,
