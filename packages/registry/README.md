@@ -33,7 +33,7 @@ packages/registry/
 
 | Area | Methods |
 |------|---------|
-| **Items CRUD** | `add_item`, `get_item`, `find_item`, `update_item`, `remove_item` |
+| **Items CRUD** | `add_item`, `get_item`, `find_item`, `update_item`, `remove_item`, `clear_items` (wipe the whole menu — items + combos) |
 | **Listing & search** | `list_items` (filter by `category` / `tag` / `available_only` / `in_stock_only`), `search`, `count` |
 | **Pricing** | `set_price` |
 | **Availability & stock** | `set_available`, `is_available`, `set_stock`, `adjust_stock` (raises `OutOfStockError`) |
