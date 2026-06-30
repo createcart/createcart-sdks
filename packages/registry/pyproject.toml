@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "createcart-registry"
-version = "0.1.0"
+version = "0.1.1"
 description = "CreateCart Menu Registry SDK — headless, pluggable menu management for ecommerce apps."
 readme = "README.md"
 requires-python = ">=3.10"

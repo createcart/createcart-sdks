@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "createcart-store-sqlite"
-version = "0.1.0"
+version = "0.1.1"
 description = "SQLite storage backends for the CreateCart SDKs — per-tenant tables with a tenant_id (0..n) ↔ name registry."
 readme = "README.md"
 requires-python = ">=3.10"

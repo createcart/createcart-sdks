@@ -143,6 +143,17 @@ class MenuRegistry:
                 combo.item_ids.remove(item_id)
         self._persist()
 
+    def clear_items(self) -> int:
+        """Remove the entire menu — every item, plus combos (which are bundles of
+        items and become meaningless without them). Categories are kept so the
+        tenant can rebuild under the same labels. Returns the item count removed.
+        """
+        removed = len(self._catalog.items)
+        self._catalog.items.clear()
+        self._catalog.combos.clear()
+        self._persist()
+        return removed
+
     # ── items: listing / search ──────────────────────────────────────────
     def list_items(
         self,

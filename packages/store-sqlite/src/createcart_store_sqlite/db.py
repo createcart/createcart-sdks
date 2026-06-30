@@ -146,6 +146,23 @@ class Database:
             ).fetchone()
             return dict(row) if row else None
 
+    def delete_tenant(self, name: str) -> bool:
+        """Delete a tenant and DROP all of its per-tenant tables (menu, carts,
+        payments, deliveries, …). Returns True if a tenant was removed. This is
+        destructive and irreversible — all of the tenant's data goes with it."""
+        tid = self.tenant_id(name)
+        if tid is None:
+            return False
+        with closing(self.connect()) as conn:
+            for base in (
+                "menu_items", "categories", "combos", "carts", "payments", "deliveries",
+            ):
+                conn.execute(f"DROP TABLE IF EXISTS {base}_{tid}")
+            conn.execute("DELETE FROM tenants WHERE name=?", (name,))
+            conn.commit()
+        self._tenant_ids.pop(name, None)
+        return True
+
     def list_tenants_full(self) -> list[dict]:
         """All tenants as dicts with id, name, base_url (no password)."""
         with closing(self.connect()) as conn:

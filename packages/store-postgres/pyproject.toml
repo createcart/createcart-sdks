@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "createcart-store-postgres"
-version = "0.1.0"
+version = "0.1.1"
 description = "Postgres / Supabase storage backends for the CreateCart SDKs (per-tenant tables)."
 readme = "README.md"
 requires-python = ">=3.10"
