@@ -76,6 +76,7 @@ db.tenant_id("brahmana-naivedyam")   # 0
 | `get_or_create_tenant(name, *, tenant_id=None)` | `int` — id, creating tenant + tables if new |
 | `update_tenant(name, *, password_hash=None, base_url=None)` | `None` — set auth/base-url fields |
 | `get_tenant(name)` | `dict \| None` — full record `{id, name, password_hash, base_url}` |
+| `delete_tenant(name)` | `bool` — delete the tenant row and **DROP all its per-tenant tables** (destructive) |
 | `tenant_id(name)` | `int \| None` |
 | `tenant_name(id)` | `str \| None` |
 | `list_tenants()` | `list[(id, name)]` ordered by id |

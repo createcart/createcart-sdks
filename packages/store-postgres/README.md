@@ -74,6 +74,7 @@ Same surface as the SQLite backend:
 | `get_or_create_tenant(name, *, tenant_id=None)` | `int` — id, creating tenant + tables if new |
 | `update_tenant(name, *, password_hash=None, base_url=None)` | `None` |
 | `get_tenant(name)` | `dict \| None` — `{id, name, password_hash, base_url}` |
+| `delete_tenant(name)` | `bool` — delete the tenant row and **DROP all its per-tenant tables** (destructive) |
 | `tenant_id(name)` / `tenant_name(id)` | `int \| None` / `str \| None` |
 | `list_tenants()` | `list[(id, name)]` |
 | `list_tenants_full()` | `list[dict]` — `{id, name, base_url}` (no password) |
