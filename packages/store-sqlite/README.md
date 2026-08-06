@@ -75,8 +75,9 @@ db.tenant_id("brahmana-naivedyam")   # 0
 | Method | Returns |
 |--------|---------|
 | `get_or_create_tenant(name, *, tenant_id=None)` | `int` — id, creating tenant + tables if new |
-| `update_tenant(name, *, password_hash=None, base_url=None)` | `None` — set auth/base-url fields |
-| `get_tenant(name)` | `dict \| None` — full record `{id, name, password_hash, base_url}` |
+| `update_tenant(name, *, password_hash=None, base_url=None, shipping_settings=None)` | `None` — set auth/base-url/shipping fields (`shipping_settings` replaces the dict whole) |
+| `update_shipping_settings(name, fields)` | `dict` — **merges** `fields` onto the tenant's stored shipping settings (partial update) and returns the saved dict |
+| `get_tenant(name)` | `dict \| None` — full record `{id, name, password_hash, base_url, shipping_settings}` (`shipping_settings` is a parsed dict, `{}` if unset) |
 | `delete_tenant(name)` | `bool` — delete the tenant row and **DROP all its per-tenant tables** (destructive) |
 | `tenant_id(name)` | `int \| None` |
 | `tenant_name(id)` | `str \| None` |
