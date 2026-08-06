@@ -50,6 +50,7 @@ MenuItem(
   image_url, icon,               # photo URL or emoji fallback
   category, tags,                # e.g. ["SPECIAL", "SWEET"]
   available, stock,              # stock=None means untracked/unlimited
+  weight_g,                      # net weight in grams; None = use a platform default
   sort_order, metadata,
 )                                # .in_stock -> available AND (stock is None or > 0)
 

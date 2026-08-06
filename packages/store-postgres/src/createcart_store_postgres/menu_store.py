@@ -27,6 +27,7 @@ class PgMenuStore:
                     icon=r["icon"], category=r["category"],
                     tags=json.loads(r["tags"] or "[]"),
                     available=bool(r["available"]), stock=r["stock"],
+                    weight_g=r["weight_g"],
                     sort_order=r["sort_order"] or 0,
                     metadata=json.loads(r["metadata"] or "{}"),
                 )
@@ -64,13 +65,13 @@ class PgMenuStore:
                 cur.executemany(
                     f"INSERT INTO menu_items_{tid} (id,name,name_localized,description,"
                     f"price,currency,image_url,icon,category,tags,available,stock,"
-                    f"sort_order,metadata) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
+                    f"weight_g,sort_order,metadata) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                     [
                         (
                             i.id, i.name, i.name_localized, i.description, str(i.price),
                             i.currency, i.image_url, i.icon, i.category,
                             json.dumps(i.tags), bool(i.available), i.stock,
-                            i.sort_order, json.dumps(i.metadata),
+                            i.weight_g, i.sort_order, json.dumps(i.metadata),
                         )
                         for i in catalog.items
                     ],

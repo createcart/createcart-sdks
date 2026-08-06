@@ -51,6 +51,7 @@ class MenuItem(BaseModel):
     tags: list[str] = Field(default_factory=list)
     available: bool = True
     stock: Optional[int] = None  # None = unlimited / not tracked
+    weight_g: Optional[int] = Field(default=None, ge=0)  # net weight; None = use a platform default
     sort_order: int = 0
     metadata: dict[str, Any] = Field(default_factory=dict)
 

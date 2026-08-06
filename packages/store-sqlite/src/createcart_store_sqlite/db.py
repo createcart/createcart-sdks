@@ -24,7 +24,7 @@ def _per_tenant_ddl(tid: int) -> list[str]:
             id TEXT PRIMARY KEY, name TEXT NOT NULL, name_localized TEXT,
             description TEXT, price TEXT, currency TEXT, image_url TEXT, icon TEXT,
             category TEXT, tags TEXT, available INTEGER, stock INTEGER,
-            sort_order INTEGER, metadata TEXT)""",
+            weight_g INTEGER, sort_order INTEGER, metadata TEXT)""",
         f"""CREATE TABLE IF NOT EXISTS categories_{tid} (
             id TEXT PRIMARY KEY, name TEXT NOT NULL, sort_order INTEGER, metadata TEXT)""",
         f"""CREATE TABLE IF NOT EXISTS combos_{tid} (
@@ -109,6 +109,14 @@ class Database:
                 )
             for ddl in _per_tenant_ddl(tid):
                 conn.execute(ddl)
+            # Idempotent migration: menu_items_<tid> may already exist from
+            # before weight_g was added (CREATE TABLE IF NOT EXISTS is a no-op
+            # then). SQLite lacks ADD COLUMN IF NOT EXISTS, so catch the
+            # "duplicate column" error instead.
+            try:
+                conn.execute(f"ALTER TABLE menu_items_{tid} ADD COLUMN weight_g INTEGER")
+            except sqlite3.OperationalError:
+                pass
             conn.commit()
         self._tenant_ids[name] = tid
         return tid

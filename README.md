@@ -14,6 +14,7 @@ createcart-sdks/
    ├─ delivery/     # Delivery SDK (Python)  — order lifecycle state machine + timeline
    ├─ notify/       # Notify SDK   (Python)  — SMS/WhatsApp status follow-ups (Twilio/Console)
    ├─ auth/         # Auth SDK     (Python)  — customer Sign in with Google (+ Mock)
+   ├─ shipping/     # Shipping SDK (Python)  — serviceability, rate, manifest, track, cancel, pickup (Delhivery B2C Express + Mock)
    ├─ store-sqlite/ # Storage      (Python)  — SQLite backends, per-tenant tables (id 0..n)
    └─ store-postgres/ # Storage    (Python)  — Postgres/Supabase backends (same per-tenant schema)
 ```
@@ -34,6 +35,7 @@ These libraries are consumed by:
 | [`packages/delivery`](packages/delivery/README.md) | Python | `createcart-delivery` | Order lifecycle state machine + timeline | 13 |
 | [`packages/notify`](packages/notify/README.md) | Python | `createcart-notify` | SMS/WhatsApp status follow-ups (Twilio + Console) | 7 |
 | [`packages/auth`](packages/auth/README.md) | Python | `createcart-auth` | Customer Sign in with Google (+ Mock) | 6 |
+| [`packages/shipping`](packages/shipping/README.md) | Python | `createcart-shipping` | Delivery serviceability, rates, manifest, tracking, cancellation, pickup (Delhivery B2C Express + Mock) | 11 |
 | [`packages/store-sqlite`](packages/store-sqlite/README.md) | Python | `createcart-store-sqlite` | SQLite storage, per-tenant tables (`tenant_id` 0..n ↔ name) | 9 |
 | [`packages/store-postgres`](packages/store-postgres/README.md) | Python | `createcart-store-postgres` | Postgres/Supabase storage, same per-tenant schema | 3 |
 

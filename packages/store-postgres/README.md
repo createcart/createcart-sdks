@@ -18,7 +18,8 @@ tenants(id INTEGER PK 0..n, name TEXT UNIQUE,         -- name → id mapping
 
 -- created on demand, one set per tenant (suffix = tenant_id):
 menu_items_<id>(id, name, name_localized, description, price, currency,
-                image_url, icon, category, tags, available, stock, sort_order, metadata)
+                image_url, icon, category, tags, available, stock, weight_g,
+                sort_order, metadata)
 categories_<id>(id, name, sort_order, metadata)
 combos_<id>(id, name, price, currency, description, item_ids, tags, available, sort_order, metadata)
 carts_<id>(cart_id PK, data)                          -- cart aggregate as JSON text
