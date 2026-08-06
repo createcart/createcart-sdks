@@ -54,6 +54,7 @@ class Customer(BaseModel):
     subject: Optional[str] = None    # stable id of the signed-in user (e.g. Google sub)
     lat: Optional[float] = None      # delivery location (captured via geolocation)
     lng: Optional[float] = None
+    pincode: Optional[str] = None    # confirmed at checkout via the shipping quote
 
 
 class OrderItem(BaseModel):
