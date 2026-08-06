@@ -57,7 +57,11 @@ class MockShippingProvider(ShippingProvider):
             order_id=order_id,
             status="manifested",
             raw_status="Manifested",
-            tracking_url=f"https://example-tracking.test/{waybill}",
+            # Delhivery's real public tracking page (same URL DelhiveryProvider uses) —
+            # a real, resolvable page so the click-through UX matches production even
+            # in the sandbox. It'll show "not found" for a fake waybill, which is
+            # expected: the point is proving the app opens a real tracking page.
+            tracking_url=f"https://www.delhivery.com/track-v2/package/{waybill}",
         )
         self._shipments[waybill] = shipment
         return shipment
