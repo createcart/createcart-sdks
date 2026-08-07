@@ -3,16 +3,14 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "createcart-delivery"
-version = "0.2.0"
-description = "CreateCart Delivery SDK — order lifecycle state machine (placed → confirmed → preparing → out for delivery → delivered) with a status timeline."
+name = "createcart-shipping"
+version = "0.1.0"
+description = "CreateCart Shipping SDK — pincode serviceability, rate quotes, shipment manifestation, tracking, cancellation and pickup requests, behind a pluggable courier provider (Delhivery B2C Express + Mock)."
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "CreateCart" }]
 license = { text = "Proprietary" }
-dependencies = [
-    "pydantic>=2.6",
-]
+dependencies = []
 
 [project.optional-dependencies]
 dev = [
@@ -20,7 +18,7 @@ dev = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/createcart_delivery"]
+packages = ["src/createcart_shipping"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

@@ -76,6 +76,7 @@ class MenuRegistry:
         image_url: Optional[str] = None,
         available: bool = True,
         stock: Optional[int] = None,
+        weight_g: Optional[int] = None,
         sort_order: int = 0,
         currency: Optional[str] = None,
         metadata: Optional[dict[str, Any]] = None,
@@ -98,6 +99,7 @@ class MenuRegistry:
             image_url=image_url,
             available=available,
             stock=stock,
+            weight_g=weight_g,
             sort_order=sort_order,
             metadata=metadata or {},
         )

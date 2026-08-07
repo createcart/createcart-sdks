@@ -18,7 +18,8 @@ tenants(id INTEGER PK 0..n, name TEXT UNIQUE,         -- name → id mapping
 
 -- created on demand, one set per tenant (suffix = tenant_id):
 menu_items_<id>(id, name, name_localized, description, price, currency,
-                image_url, icon, category, tags, available, stock, sort_order, metadata)
+                image_url, icon, category, tags, available, stock, weight_g,
+                sort_order, metadata)
 categories_<id>(id, name, sort_order, metadata)
 combos_<id>(id, name, price, currency, description, item_ids, tags, available, sort_order, metadata)
 carts_<id>(cart_id PK, data)                          -- cart aggregate as JSON text
@@ -72,8 +73,9 @@ Same surface as the SQLite backend:
 | Method | Returns |
 |--------|---------|
 | `get_or_create_tenant(name, *, tenant_id=None)` | `int` — id, creating tenant + tables if new |
-| `update_tenant(name, *, password_hash=None, base_url=None)` | `None` |
-| `get_tenant(name)` | `dict \| None` — `{id, name, password_hash, base_url}` |
+| `update_tenant(name, *, password_hash=None, base_url=None, shipping_settings=None)` | `None` — `shipping_settings` replaces the dict whole |
+| `update_shipping_settings(name, fields)` | `dict` — **merges** `fields` onto the tenant's stored shipping settings and returns the saved dict |
+| `get_tenant(name)` | `dict \| None` — `{id, name, password_hash, base_url, shipping_settings}` |
 | `delete_tenant(name)` | `bool` — delete the tenant row and **DROP all its per-tenant tables** (destructive) |
 | `tenant_id(name)` / `tenant_name(id)` | `int \| None` / `str \| None` |
 | `list_tenants()` | `list[(id, name)]` |

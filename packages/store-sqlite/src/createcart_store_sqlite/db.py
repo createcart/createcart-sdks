@@ -8,6 +8,7 @@ handle is safe to share across threads/requests.
 
 from __future__ import annotations
 
+import json
 import re
 import sqlite3
 from contextlib import closing
@@ -24,7 +25,7 @@ def _per_tenant_ddl(tid: int) -> list[str]:
             id TEXT PRIMARY KEY, name TEXT NOT NULL, name_localized TEXT,
             description TEXT, price TEXT, currency TEXT, image_url TEXT, icon TEXT,
             category TEXT, tags TEXT, available INTEGER, stock INTEGER,
-            sort_order INTEGER, metadata TEXT)""",
+            weight_g INTEGER, sort_order INTEGER, metadata TEXT)""",
         f"""CREATE TABLE IF NOT EXISTS categories_{tid} (
             id TEXT PRIMARY KEY, name TEXT NOT NULL, sort_order INTEGER, metadata TEXT)""",
         f"""CREATE TABLE IF NOT EXISTS combos_{tid} (
@@ -58,14 +59,17 @@ class Database:
                 "  id INTEGER PRIMARY KEY,"      # 0..n, assigned explicitly
                 "  name TEXT NOT NULL UNIQUE,"
                 "  password_hash TEXT,"          # opaque hash (API hashes/verifies)
-                "  base_url TEXT)"               # the tenant's API base URL
+                "  base_url TEXT,"                # the tenant's API base URL
+                "  shipping_settings TEXT)"       # JSON: pickup address, seller info, etc.
             )
-            # Migrate older DBs that predate the auth columns.
+            # Migrate older DBs that predate these columns.
             cols = {r["name"] for r in conn.execute("PRAGMA table_info(tenants)")}
             if "password_hash" not in cols:
                 conn.execute("ALTER TABLE tenants ADD COLUMN password_hash TEXT")
             if "base_url" not in cols:
                 conn.execute("ALTER TABLE tenants ADD COLUMN base_url TEXT")
+            if "shipping_settings" not in cols:
+                conn.execute("ALTER TABLE tenants ADD COLUMN shipping_settings TEXT")
             conn.commit()
 
     def connect(self) -> sqlite3.Connection:
@@ -109,6 +113,14 @@ class Database:
                 )
             for ddl in _per_tenant_ddl(tid):
                 conn.execute(ddl)
+            # Idempotent migration: menu_items_<tid> may already exist from
+            # before weight_g was added (CREATE TABLE IF NOT EXISTS is a no-op
+            # then). SQLite lacks ADD COLUMN IF NOT EXISTS, so catch the
+            # "duplicate column" error instead.
+            try:
+                conn.execute(f"ALTER TABLE menu_items_{tid} ADD COLUMN weight_g INTEGER")
+            except sqlite3.OperationalError:
+                pass
             conn.commit()
         self._tenant_ids[name] = tid
         return tid
@@ -119,8 +131,12 @@ class Database:
         *,
         password_hash: Optional[str] = None,
         base_url: Optional[str] = None,
+        shipping_settings: Optional[dict] = None,
     ) -> None:
-        """Set the password hash and/or base URL for an existing tenant."""
+        """Set the password hash, base URL and/or shipping settings for an
+        existing tenant. ``shipping_settings`` replaces the stored dict whole —
+        callers that want a partial update should merge onto ``get_tenant``'s
+        current value first (see ``update_shipping_settings``)."""
         sets, vals = [], []
         if password_hash is not None:
             sets.append("password_hash=?")
@@ -128,6 +144,9 @@ class Database:
         if base_url is not None:
             sets.append("base_url=?")
             vals.append(base_url)
+        if shipping_settings is not None:
+            sets.append("shipping_settings=?")
+            vals.append(json.dumps(shipping_settings))
         if not sets:
             return
         vals.append(name)
@@ -138,13 +157,30 @@ class Database:
             conn.commit()
 
     def get_tenant(self, name: str) -> Optional[dict]:
-        """Full tenant record (id, name, password_hash, base_url) or None."""
+        """Full tenant record (id, name, password_hash, base_url,
+        shipping_settings — parsed to a dict, ``{}`` if unset) or None."""
         with closing(self.connect()) as conn:
             row = conn.execute(
-                "SELECT id, name, password_hash, base_url FROM tenants WHERE name=?",
+                "SELECT id, name, password_hash, base_url, shipping_settings "
+                "FROM tenants WHERE name=?",
                 (name,),
             ).fetchone()
-            return dict(row) if row else None
+            if row is None:
+                return None
+            rec = dict(row)
+            rec["shipping_settings"] = (
+                json.loads(rec["shipping_settings"]) if rec.get("shipping_settings") else {}
+            )
+            return rec
+
+    def update_shipping_settings(self, name: str, fields: dict) -> dict:
+        """Merge ``fields`` onto the tenant's stored shipping settings (partial
+        update — unset keys are dropped, so callers should pass ``None`` values
+        to clear a field, not omit it). Returns the merged, saved dict."""
+        current = (self.get_tenant(name) or {}).get("shipping_settings") or {}
+        merged = {**current, **fields}
+        self.update_tenant(name, shipping_settings=merged)
+        return merged
 
     def delete_tenant(self, name: str) -> bool:
         """Delete a tenant and DROP all of its per-tenant tables (menu, carts,

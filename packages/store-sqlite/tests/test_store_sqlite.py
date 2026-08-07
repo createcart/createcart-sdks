@@ -34,6 +34,34 @@ def test_tenant_password_and_base_url(tmp_path):
     assert db.list_tenants_full() == [{"id": 0, "name": "acme", "base_url": "http://x"}]
 
 
+def test_shipping_settings_default_empty_dict(tmp_path):
+    db = Database(tmp_path / "cc.db")
+    db.get_or_create_tenant("acme")
+    assert db.get_tenant("acme")["shipping_settings"] == {}
+
+
+def test_update_shipping_settings_merges_partial(tmp_path):
+    db = Database(tmp_path / "cc.db")
+    db.get_or_create_tenant("acme")
+    db.update_shipping_settings("acme", {"origin_pin": "500032", "handling_fee": 40})
+    assert db.get_tenant("acme")["shipping_settings"] == {
+        "origin_pin": "500032", "handling_fee": 40,
+    }
+    # a second partial update merges onto the first, not replaces it
+    db.update_shipping_settings("acme", {"origin_city": "Hyderabad"})
+    assert db.get_tenant("acme")["shipping_settings"] == {
+        "origin_pin": "500032", "handling_fee": 40, "origin_city": "Hyderabad",
+    }
+
+
+def test_update_shipping_settings_can_clear_a_field(tmp_path):
+    db = Database(tmp_path / "cc.db")
+    db.get_or_create_tenant("acme")
+    db.update_shipping_settings("acme", {"origin_pin": "500032"})
+    db.update_shipping_settings("acme", {"origin_pin": None})
+    assert db.get_tenant("acme")["shipping_settings"] == {"origin_pin": None}
+
+
 def test_explicit_tenant_id(tmp_path):
     db = Database(tmp_path / "cc.db")
     assert db.get_or_create_tenant("acme", tenant_id=7) == 7

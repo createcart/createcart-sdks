@@ -51,7 +51,7 @@ DeliveryOrder(
   timeline[StatusEvent],          # every transition, timestamped
   eta, courier, notes, metadata, created_at, updated_at,
 )
-Customer(name, phone, address, email)
+Customer(name, phone, address, email, pincode)   # pincode confirmed at checkout, used for shipping
 OrderItem(item_id, name, quantity, unit_price)   # .line_total
 Courier(name, phone, tracking_url)
 StatusEvent(status, at, note)
